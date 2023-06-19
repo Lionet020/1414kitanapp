@@ -1,0 +1,26 @@
+import os
+import tkinter as tk
+from tkinter import filedialog
+
+def delete_thumbs_db(folder_path):
+    for root, dirs, files in os.walk(folder_path):
+        for file in files:
+            if file.lower() == "thumbs.db":
+                file_path = os.path.join(root, file)
+                os.remove(file_path)
+                print(f"Deleted: {file_path}")
+
+def select_folder():
+    folder_path = filedialog.askdirectory(title="Select Folder")
+    delete_thumbs_db(folder_path)
+
+# GUIの作成
+window = tk.Tk()
+window.title("Thumbs.db Cleaner")
+
+# フォルダ選択ボタン
+select_button = tk.Button(window, text="Select Folder", command=select_folder)
+select_button.pack(pady=20)
+
+# GUIのメインループ
+window.mainloop()
