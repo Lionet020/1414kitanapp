@@ -7,11 +7,14 @@ import json
 def launch_tool(tool_path):
     file_extension = os.path.splitext(tool_path)[1].lower()
     if file_extension == ".py":
-        os.system(f'python {tool_path}')  # Pythonファイルを実行
+        os.chdir(os.path.dirname(tool_path))  # カレントディレクトリを一時的に変更
+        os.system(f'python "{tool_path}"')  # Pythonファイルを実行
     elif file_extension == ".pyw":
-        os.system(f'pythonw {tool_path}')  # Pythonwファイルを実行
+        os.chdir(os.path.dirname(tool_path))  # カレントディレクトリを一時的に変更
+        os.system(f'pythonw "{tool_path}"')  # Pythonwファイルを実行
     elif file_extension == ".pl":
-        os.system(f'perl {tool_path}')  # Perlファイルを実行
+        os.chdir(os.path.dirname(tool_path))  # カレントディレクトリを一時的に変更
+        os.system(f'perl "{tool_path}"')  # Perlファイルを実行
     elif file_extension in [".xlsx", ".xlsm", ".txt"]:
         os.startfile(tool_path)  # エクセルファイルやテキストファイルを開く
     else:
@@ -48,15 +51,18 @@ def create_button(tool, row, col):
     button_frame = tk.Frame(tool_frame)
     button_frame.grid(row=row, column=col, padx=10, pady=10)
 
-    button = tk.Button(button_frame, image=icon, compound=tk.TOP, command=lambda path=tool["path"]: launch_tool(path), **button_style)
-    button.image = icon  # ガベージコレクションを防ぐために参照を保持
+    button = tk.Button(button_frame, image=icon, command=lambda tool_path=tool["path"]: launch_tool(tool_path))
     button.pack()
 
     label = tk.Label(button_frame, text=tool["name"], **label_style)
     label.pack()
 
-    delete_button = tk.Button(button_frame, text="削除", command=lambda t=tool: delete_tool(t), **delete_button_style)
-    delete_button.pack()
+    button.image = icon  # 参照を保持
+
+def delete_tool(tool):
+    tools.remove(tool)
+    save_tools()
+    refresh_tool_buttons()
 
 def save_tools():
     with open("tools.json", "w") as f:
