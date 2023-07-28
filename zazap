@@ -1,0 +1,49 @@
+import requests
+
+# OWASP ZAPのAPIエンドポイント
+ZAP_API_URL = "http://localhost:8080/JSON"
+
+# パッシブスキャンを実行する関数
+def run_passive_scan(requests_data):
+    # ZAPに対してパッシブスキャンをトリガーするAPIエンドポイント
+    api_endpoint = f"{ZAP_API_URL}/pscan/action/scan/"
+    
+    # HTTP通信ログから抽出したリクエストとレスポンスデータをZAPに渡す
+    for request_info in requests_data:
+        request_url = request_info["url"]
+        request_headers = request_info["headers"]
+        request_body = request_info["body"]
+        response_headers = request_info["response_headers"]
+        response_body = request_info["response_body"]
+        
+        # ZAP APIに送信するデータを組み立てる
+        data = {
+            "url": request_url,
+            "requestHeaders": request_headers,
+            "requestBody": request_body,
+            "responseHeaders": response_headers,
+            "responseBody": response_body,
+        }
+        
+        # ZAP APIを呼び出してパッシブスキャンを実行
+        response = requests.post(api_endpoint, data=data)
+        
+        # 必要に応じてレスポンスを処理する（エラーチェックなど）
+
+# HTTP通信ログからリクエストとレスポンス情報を抽出する関数
+def parse_http_logs(log_file_path):
+    # ログファイルを読み込み、リクエストとレスポンス情報を抽出してリストに格納するロジックを実装
+    # ここでは具体的な実装は省略します
+    
+    # リクエストとレスポンス情報を含むリストを返す
+    return requests_data
+
+if __name__ == "__main__":
+    # HTTP通信ログファイルのパス（例として"logs/http_traffic.log"を指定）
+    log_file_path = "logs/http_traffic.log"
+    
+    # HTTP通信ログからリクエストとレスポンス情報を抽出
+    requests_data = parse_http_logs(log_file_path)
+    
+    # パッシブスキャンを実行
+    run_passive_scan(requests_data)
