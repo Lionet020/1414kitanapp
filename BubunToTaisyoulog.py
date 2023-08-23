@@ -9,7 +9,7 @@ search_word = "======================================================"
 
 # ファイルごとに処理
 for filename in target_files:
-    with open(filename, "r") as file:
+    with open(filename, "r", encoding="utf-8") as file:  # エンコーディングをutf-8に変更
         content = file.read()
         occurrences = content.count(search_word)
         
@@ -23,5 +23,5 @@ for filename in target_files:
             output_content = "\n".join(content.split(search_word)[:4])
         
         # 出力ファイルに書き込み
-        with open(output_filename, "w") as output_file:
+        with open(output_filename, "w", encoding="utf-8") as output_file:  # エンコーディングをutf-8に変更
             output_file.write(output_content)
