@@ -1,34 +1,14 @@
-import chardet  # chardetライブラリを使用してファイルのエンコーディングを調べる
-
 def merge_blocks(input_filename, output_filename):
     blocks = {}  # ブロックごとの内容を保持する辞書
 
     with open(input_filename, 'rb') as input_file:
-        # ファイルのエンコーディングを調べる
-        detector = chardet.universaldetector.UniversalDetector()
         for line in input_file:
-            detector.feed(line)
-            if detector.done:
-                break
-        encoding = detector.result['encoding']
-
-    with open(input_filename, 'r', encoding=encoding) as input_file:
-        current_block = None
-        current_content = []
-
-        for line in input_file:
-            if line.startswith("********** "):
-                if current_block is not None:
-                    # ブロックの終わりを処理して内容を辞書に追加
-                    blocks[current_block] = current_content
-
-                current_block = line.strip()  # ブロックのラベルを取得
-                current_content = []  # 新しいブロックの内容を初期化
+            line = line.rstrip(b'\r\n')  # 改行コードを削除
+            if line.startswith(b"********** "):
+                current_block = line.decode('utf-8', errors='replace')  # ブロックのラベルを取得
+                blocks[current_block] = []  # 新しいブロックの内容を初期化
             else:
-                current_content.append(line.strip())  # 行をブロックの内容に追加
-
-        if current_block is not None:
-            blocks[current_block] = current_content
+                blocks[current_block].append(line.decode('utf-8', errors='replace'))  # 行をブロックの内容に追加
 
     merged_blocks = {}  # マージ済みのブロックを保持する辞書
 
@@ -38,7 +18,7 @@ def merge_blocks(input_filename, output_filename):
         else:
             merged_blocks[block].update(content)  # ユニークな内容をマージ
 
-    with open(output_filename, 'w') as output_file:
+    with open(output_filename, 'w', encoding='utf-8') as output_file:
         for block, content in merged_blocks.items():
             output_file.write(block + '\n')  # ブロックのラベルを出力
 
