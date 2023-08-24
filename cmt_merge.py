@@ -6,10 +6,15 @@ def merge_blocks(input_filename, output_filename):
         for line in input_file:
             line = line.rstrip(b'\r\n')  # 改行コードを削除
             if line.startswith(b"********** "):
+                if current_block is not None:
+                    blocks[current_block] = content  # ブロックの内容を保存
                 current_block = line.decode('utf-8', errors='replace')  # ブロックのラベルを更新
-                blocks[current_block] = []  # 新しいブロックの内容を初期化
+                content = []  # 新しいブロックの内容を初期化
             else:
-                blocks[current_block].append(line.decode('utf-8', errors='replace'))  # 行をブロックの内容に追加
+                content.append(line.decode('utf-8', errors='replace'))  # 行をブロックの内容に追加
+
+        if current_block is not None:
+            blocks[current_block] = content  # 最後のブロックの内容を保存
 
     merged_blocks = {}  # マージ済みのブロックを保持する辞書
 
