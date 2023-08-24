@@ -1,6 +1,7 @@
 def merge_blocks(input_filename, output_filename):
     blocks = {}  # ブロックごとの内容を保持する辞書
     current_block = None  # ブロックのラベルを保持する変数
+    content = []  # ブロックの内容を保持する変数
 
     with open(input_filename, 'rb') as input_file:
         for line in input_file:
