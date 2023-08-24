@@ -1,7 +1,18 @@
+import chardet  # chardetライブラリを使用してファイルのエンコーディングを調べる
+
 def merge_blocks(input_filename, output_filename):
     blocks = {}  # ブロックごとの内容を保持する辞書
 
-    with open(input_filename, 'r') as input_file:
+    with open(input_filename, 'rb') as input_file:
+        # ファイルのエンコーディングを調べる
+        detector = chardet.universaldetector.UniversalDetector()
+        for line in input_file:
+            detector.feed(line)
+            if detector.done:
+                break
+        encoding = detector.result['encoding']
+
+    with open(input_filename, 'r', encoding=encoding) as input_file:
         current_block = None
         current_content = []
 
