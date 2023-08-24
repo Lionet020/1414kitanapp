@@ -1,11 +1,12 @@
 def merge_blocks(input_filename, output_filename):
     blocks = {}  # ブロックごとの内容を保持する辞書
+    current_block = None  # ブロックのラベルを保持する変数
 
     with open(input_filename, 'rb') as input_file:
         for line in input_file:
             line = line.rstrip(b'\r\n')  # 改行コードを削除
             if line.startswith(b"********** "):
-                current_block = line.decode('utf-8', errors='replace')  # ブロックのラベルを取得
+                current_block = line.decode('utf-8', errors='replace')  # ブロックのラベルを更新
                 blocks[current_block] = []  # 新しいブロックの内容を初期化
             else:
                 blocks[current_block].append(line.decode('utf-8', errors='replace'))  # 行をブロックの内容に追加
