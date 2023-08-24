@@ -1,0 +1,47 @@
+import re
+
+def extract_comments(text):
+    # 正規表現パターン
+    comment_patterns = {
+        "HTML": r"<!--(.*?)-->",              # HTMLコメント
+        "JavaScript": r"//(.*?)$|/\*(.*?)\*/",  # JavaScriptコメント
+        "CSS": r"/\*(.*?)\*/",                # CSSコメント
+    }
+    
+    comments = {}
+    for label, pattern in comment_patterns.items():
+        matches = re.findall(pattern, text, re.DOTALL | re.MULTILINE)
+        comments[label] = [match[0] or match[1] for match in matches]
+    
+    return comments
+
+def process_log(log_filename, output_filename):
+    processed_urls = set()
+    
+    with open(log_filename, "r", errors="ignore") as log_file, open(output_filename, "w") as output_file:
+        log_text = log_file.read()
+        requests = log_text.split("\n\n")
+        
+        for request in requests:
+            lines = request.split("\n")
+            url = lines[1].split(" ")[1]
+            if url in processed_urls:
+                continue
+            
+            comments = extract_comments(request)
+            if any(comments.values()):
+                output_file.write(f"URL: {url}\n")
+                for label, comment_list in comments.items():
+                    if comment_list:
+                        output_file.write(f"{label} Comments:\n")
+                        for comment in comment_list:
+                            output_file.write(f"{comment.strip()}\n")
+                output_file.write("\n")
+                
+            processed_urls.add(url)
+
+if __name__ == "__main__":
+    input_log_file = "input_log.txt"  # 入力ファイル名
+    output_file = "output_comments.txt"  # 出力ファイル名
+    process_log(input_log_file, output_file)
+    print("Extraction complete.")
