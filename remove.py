@@ -1,13 +1,27 @@
-import re
-
-def remove_prefix(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
+def merge_unique_data(file_path):
+    with open(file_path, 'r', encoding='shift-jis') as file:
         lines = file.readlines()
 
-    updated_lines = [re.sub(r'^\[\d+\]:\s*', '', line) for line in lines]
+    merged_data = {}
+    current_key = None
+    current_data = []
 
-    with open(file_path, 'w', encoding='utf-8') as file:
-        file.writelines(updated_lines)
+    for line in lines:
+        if line.startswith('********* http'):
+            if current_key is not None:
+                merged_data[current_key] = current_data
+            current_key = line.strip()
+            current_data = []
+        else:
+            current_data.append(line.strip())
+
+    if current_key is not None:
+        merged_data[current_key] = current_data
+
+    with open('output.txt', 'w', encoding='shift-jis') as output_file:
+        for key, data in merged_data.items():
+            output_file.write(key + '\n')
+            output_file.write('\n'.join(data) + '\n\n')
 
 # 使い方の例
-remove_prefix('your_text_file.txt')
+merge_unique_data('your_text_file.txt')
