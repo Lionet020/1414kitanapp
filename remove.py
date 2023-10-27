@@ -11,7 +11,7 @@ def merge_unique_data(file_path):
             if current_key is not None:
                 merged_data[current_key] = current_data
             current_key = line.strip()
-            current_data = []
+            current_data = [line.strip()]  # 初回のデータを追加
         else:
             current_data.append(line.strip())
 
